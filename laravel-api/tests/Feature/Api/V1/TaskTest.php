@@ -139,4 +139,17 @@ class TaskTest extends TestCase
         $response->assertJsonValidationErrors(['is_completed']);
     }
 
+    public function test_user_can_delete_task()
+    {
+        $task = Task::factory()->create();
+
+        $response = $this->deleteJson('/api/v1/tasks/'. $task->id);
+
+        $response->assertNoContent();
+        
+        $this->assertDatabaseMissing('tasks', [
+            'id'=> $task->id,
+        ]);
+    }
+
 }
