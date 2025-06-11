@@ -56,4 +56,31 @@ class TaskTest extends TestCase
             ]);
     }
 
+    public function test_user_can_create_a_task()
+    {
+        $response = $this->postJson('/api/v1/tasks',[
+            'name' => 'New task'
+        ]);
+        
+        $response->assertCreated();
+        $response->assertJsonStructure([
+            'data'=> ['id','name','is_completed']
+        ]);
+
+        $this->assertDatabaseHas('tasks',[
+            'name' => 'New task',
+        ]);
+    }
+
+    public function test_user_cannot_create_invalid_task()
+    {
+        $response = $this->postJson('/api/v1/tasks',[
+            'name' => ''
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['name']);
+    }
+
+
 }
