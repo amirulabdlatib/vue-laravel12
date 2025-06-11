@@ -97,4 +97,46 @@ class TaskTest extends TestCase
 
     }
 
+    public function test_user_cannot_update_task_with_invalid_data()
+    {
+        $task = Task::factory()->create();
+
+        $response = $this->putJson('/api/v1/tasks/' . $task->id,[
+            'name' => ''
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['name']);
+    }
+
+    public function test_user_can_update_task_completion()
+    {
+        $task = Task::factory()->create([
+            'is_completed' => false,
+        ]);
+
+        $response = $this->patchJson('api/v1/tasks/'. $task->id . '/complete',[
+            'is_completed'=> true,
+        ]);
+
+        $response->assertOk();
+        $response->assertJsonFragment([
+            'is_completed'=>true
+        ]);
+    }
+
+    public function test_user_cannot_update_task_completion_with_invalid_data()
+    {
+        $task = Task::factory()->create([
+            'is_completed' => false,
+        ]);
+
+        $response = $this->patchJson('api/v1/tasks/'. $task->id . '/complete',[
+            'is_completed'=> 'yes',
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['is_completed']);
+    }
+
 }
