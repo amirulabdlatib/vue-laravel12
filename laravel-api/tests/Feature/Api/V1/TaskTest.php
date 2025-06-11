@@ -82,5 +82,19 @@ class TaskTest extends TestCase
         $response->assertJsonValidationErrors(['name']);
     }
 
+    public function test_user_can_update_task()
+    {
+        $task = Task::factory()->create();
+
+        $response = $this->putJson('/api/v1/tasks/'.$task->id,[
+            'name'=> 'Updated Task'
+        ]);
+
+        $response->assertOk();
+        $response->assertJsonFragment([
+            'name' => 'Updated Task'
+        ]);
+
+    }
 
 }
